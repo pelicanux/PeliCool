@@ -83,7 +83,9 @@ read_attr() {
 } > "$output/system.txt"
 count=0
 for device in "$usb_root"/*; do
-    [ -r "$device/idVendor" ] && [ -r "$device/idProduct" ] || continue
+    if [ ! -r "$device/idVendor" ] || [ ! -r "$device/idProduct" ]; then
+        continue
+    fi
     vendor=$(read_attr "$device/idVendor")
     maker=$(read_attr "$device/manufacturer")
     case "$vendor:$maker" in

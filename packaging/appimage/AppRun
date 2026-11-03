@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 # O payload é relocável. Configurações continuam no XDG_CONFIG_HOME real.
-app_dir=${APPDIR:-$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)}
+app_dir=${APPDIR:-$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)}
 if [ "${LD_LIBRARY_PATH+x}" = x ]; then export PELICOOL_HOST_LIBRARY_PATH="$LD_LIBRARY_PATH"; else export PELICOOL_HOST_LIBRARY_PATH=''; fi
 export LD_LIBRARY_PATH="$app_dir/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 case "${1:-}" in
