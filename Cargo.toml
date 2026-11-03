@@ -1,0 +1,34 @@
+[package]
+name = "pelicool"
+version = "0.1.0"
+edition = "2024"
+description = "Personalização de displays LCD e iluminação de dispositivos compatíveis no Linux"
+license = "MIT"
+
+[workspace]
+members = ["xtask"]
+default-members = ["."]
+resolver = "3"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.6", features = ["derive"] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+eframe = { version = "0.31.1", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
+egui_extras = { version = "0.31.1", default-features = false, features = ["svg"] }
+image = { version = "0.25.10", default-features = false, features = ["jpeg", "png", "gif", "webp"] }
+gif = "0.14.2"
+jpeg-encoder = "0.6.1"
+rfd = "0.16"
+rusb = { version = "0.9.4", features = ["vendored"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ksni = { version = "0.3.7", default-features = false, features = ["async-io", "blocking"] }
+winit = { version = "0.30.13", default-features = false, features = ["x11", "rwh_06"] }
+
+[profile.release]
+lto = "thin"
+strip = true
+
+[dev-dependencies]
+zbus = { version = "5.19", default-features = false, features = ["async-io", "blocking-api"] }

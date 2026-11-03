@@ -1,0 +1,2 @@
+# Acesso somente ao MYSTIQUE USB 3633:0009 para a sessão local ativa.
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="3633", ATTR{idProduct}=="0009", TAG+="uaccess"

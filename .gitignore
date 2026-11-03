@@ -1,0 +1,26 @@
+/target/
+*.exe
+/dist/
+*.AppImage
+/gifs&image/
+
+# Pesquisa, referências, automações e instruções locais do agente.
+/.local-notes/
+/AGENTS.md
+/.agents/
+/.codex/
+/.aws/
+
+# Dados da sessão, credenciais e relatórios pessoais.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+/diagnostics/
+/screenshots/
+/coverage/
+*.log
+*.core

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=PeliCool
+Comment=Personalização de displays LCD e iluminação
+Exec=pelicool
+Icon=pelicool
+Terminal=false
+Categories=Utility;
+StartupWMClass=pelicool

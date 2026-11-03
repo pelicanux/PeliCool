@@ -1,0 +1,55 @@
+name: Rust
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Código e ferramentas sem scripts Python
+        run: test -z "$(git ls-files -- '*.py' '*.pyc')"
+      - name: Arquivos locais fora do repositório
+        run: test -z "$(git ls-files -- .local-notes AGENTS.md .agents .codex .aws 'gifs&image' target dist '*.exe' '*.AppImage')"
+      - name: Dependências Linux
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libudev-dev libxkbcommon-dev libwayland-dev libx11-dev libxi-dev libxcursor-dev libxrandr-dev libgl1-mesa-dev dbus desktop-file-utils shellcheck file curl patchelf xvfb
+      - name: Rust
+        run: |
+          rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.98.1
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - run: cargo test --locked --workspace
+      - name: Bandeja em D-Bus isolado
+        env:
+          PELICOOL_PRIVATE_BUS_TEST: "1"
+        run: dbus-run-session -- cargo test --locked --bin pelicool private_bus -- --ignored --test-threads=1
+      - name: Scripts e desktop entry
+        run: |
+          shellcheck scripts/*.sh packaging/appimage/AppRun
+          desktop-file-validate packaging/appimage/pelicool.desktop
+      - name: AppImage
+        run: bash scripts/pelicool-appimage.sh
+      - name: Smoke test do pacote
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: "1"
+        run: |
+          image=dist/PeliCool.AppImage
+          "$image" --help
+          "$image" drivers
+          export XDG_CONFIG_HOME="$RUNNER_TEMP/pelicool-qa/config"
+          export XDG_DATA_HOME="$RUNNER_TEMP/pelicool-qa/data"
+          LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a dbus-run-session -- "$image" gui --screenshot "$RUNNER_TEMP/pelicool.png"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PeliCool-x86_64
+          path: dist/PeliCool.AppImage
