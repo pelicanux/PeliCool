@@ -134,7 +134,7 @@ automático. Novos modelos podem ser integrados por módulos e pull requests.
 
 O aplicativo e as ferramentas são escritos em Rust. Instale o toolchain Rust,
 pkg-config e as bibliotecas de desenvolvimento de udev, X11, Wayland, xkbcommon
-e OpenGL da sua distribuição. Depois execute:
+(incluindo xkbcommon-x11) e OpenGL da sua distribuição. Depois execute:
 
 ```sh
 cargo build --locked

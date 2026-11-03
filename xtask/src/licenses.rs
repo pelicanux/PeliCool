@@ -191,26 +191,42 @@ pub fn collect(root: &Path, destination: &Path) -> Result<()> {
     let metadata: Metadata = serde_json::from_slice(&result.stdout)?;
     let packages = metadata.application_packages()?;
     write_notices(&packages, destination)?;
-    // libudev é a biblioteca do sistema-base copiada pelo linuxdeploy.
-    for folder in [
-        Path::new("/usr/share/licenses/systemd"),
-        Path::new("/usr/share/doc/libudev1"),
+    // Bibliotecas do sistema-base copiadas pelo linuxdeploy, inclusive dlopen.
+    for (name, folders) in [
+        (
+            "libudev",
+            ["/usr/share/licenses/systemd", "/usr/share/doc/libudev1"],
+        ),
+        (
+            "libxkbcommon",
+            [
+                "/usr/share/licenses/libxkbcommon",
+                "/usr/share/doc/libxkbcommon0",
+            ],
+        ),
+        (
+            "libxcb",
+            ["/usr/share/licenses/libxcb", "/usr/share/doc/libxcb-xkb1"],
+        ),
     ] {
-        if !folder.is_dir() {
-            continue;
-        }
-        let output = destination.join("libudev");
-        fs::create_dir_all(&output)?;
-        for entry in fs::read_dir(folder)? {
-            let path = entry?.path();
-            if path.is_file() && path.metadata()?.len() <= LIMIT {
-                fs::copy(
-                    &path,
-                    output.join(path.file_name().context("Aviso sem nome")?),
-                )?;
+        for folder in folders
+            .iter()
+            .map(Path::new)
+            .filter(|folder| folder.is_dir())
+            .take(1)
+        {
+            let output = destination.join(name);
+            fs::create_dir_all(&output)?;
+            for entry in fs::read_dir(folder)? {
+                let path = entry?.path();
+                if path.is_file() && path.metadata()?.len() <= LIMIT {
+                    fs::copy(
+                        &path,
+                        output.join(path.file_name().context("Aviso sem nome")?),
+                    )?;
+                }
             }
         }
-        break;
     }
     println!(
         "Licenças de {} dependências reunidas em {}.",

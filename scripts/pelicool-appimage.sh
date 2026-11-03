@@ -65,8 +65,15 @@ while read -r task_name task_sha task_url; do
         case "$task_name" in linuxdeploy*) task_deployer="$task_extract/squashfs-root/AppRun";; appimagetool*) task_packager="$task_extract/squashfs-root/AppRun";; esac
     fi
 done < "$task_root/packaging/appimage/tools-x86_64.lock"
+# winit abre estas bibliotecas com dlopen; elas não aparecem no ldd do binário.
+task_gui_libraries=()
+for task_library_name in libxkbcommon-x11.so.0 libxkbcommon.so.0 libxcb-xkb.so.1; do
+    task_library_path=$(ldconfig -p | awk -v name="$task_library_name" '$1 == name && !found {print $NF; found=1}')
+    [[ -f "$task_library_path" ]] || { echo "Biblioteca necessária para empacotar: $task_library_name" >&2; exit 1; }
+    task_gui_libraries+=(--library "$task_library_path")
+done
 # O perfil release já remove símbolos. Preserve bibliotecas do host, inclusive RELR.
-NO_STRIP=1 "$task_deployer" --appdir "$task_appdir" --executable "$task_appdir/usr/bin/pelicool" --desktop-file "$task_appdir/pelicool.desktop" --icon-file "$task_appdir/pelicool.svg"
+NO_STRIP=1 "$task_deployer" --appdir "$task_appdir" --executable "$task_appdir/usr/bin/pelicool" --desktop-file "$task_appdir/pelicool.desktop" --icon-file "$task_appdir/pelicool.svg" "${task_gui_libraries[@]}"
 # Mantém nosso launcher; nenhuma configuração é gravada dentro do AppDir.
 install -m755 -- "$task_root/packaging/appimage/AppRun" "$task_appdir/AppRun"
 ARCH=x86_64 "$task_packager" --runtime-file "$task_tools/runtime-x86_64" --no-appstream "$task_appdir" "$task_output/PeliCool.AppImage"
