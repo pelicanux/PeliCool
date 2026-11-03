@@ -1,4 +1,8 @@
-# PeliCool
+<p align="center">
+  <img src="assets/pelicool.svg" alt="Logo do PeliCool" width="180">
+</p>
+
+<h1 align="center">PeliCool</h1>
 
 Personalize a tela LCD e a iluminação do seu water cooler no Linux com imagens,
 GIFs e sensores do sistema. Projeto independente e de código aberto, sem vínculo
@@ -6,6 +10,8 @@ com o fabricante. Não controla a velocidade das fans ou da bomba.
 
 O módulo atual atende ao **DeepCool MYSTIQUE**, com suporte confirmado no
 **MYSTIQUE 360** USB `3633:0009`. Outros modelos precisam de um módulo compatível.
+
+![Interface do PeliCool com prévia do display, biblioteca de imagens e GIFs e controles de iluminação](assets/readme/interface.png)
 
 ## Baixar e abrir
 
